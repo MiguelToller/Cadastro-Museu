@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.cadastromuseu.Biblioteca.controller.HomeController">
+
+    <center>
+        <VBox spacing="10" alignment="CENTER">
+            <Label text="Sistema Museu - Biblioteca"/>
+            <Button text="Cadastrar Livro"/>
+            <Button text="Empréstimos"/>
+        </VBox>
+    </center>
+
+</BorderPane>
