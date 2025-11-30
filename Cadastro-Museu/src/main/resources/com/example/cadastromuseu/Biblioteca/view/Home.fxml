@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.cadastromuseu.Biblioteca.controller.HomeController">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <top>
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <Label fx:id="lblUsuarioLogado" text=""/>
+            <Button fx:id="btnSair" text="Sair" onAction="#handleLogout" style="-fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="10" alignment="CENTER">
+            <Label text="Sistema Museu - Biblioteca"/>
+
+            <Button fx:id="btnCadastrarLivro" text="Cadastrar Livro" onAction="#abrirCadastroLivro"/>
+            <Button fx:id="btnCadastrarUsuario" text="Cadastrar Usuario" onAction="#abrirCadastroUsuario" />
+            <Button fx:id="btnRegistrarEmprestimo" text="Registrar Empréstimo" onAction="#abrirRegistroEmprestimo" />
+            <Button fx:id="btnGerenciarDevolucao" text="Gerenciar Devoluções" onAction="#abrirGestaoDevolucao" />
+
+            <Button fx:id="btnListarLivros" text="Listar Livros" onAction="#listarLivros"/>
+
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -8,4 +8,5 @@ module com.example.cadastromuseu {
     exports com.example.cadastromuseu;
     exports com.example.cadastromuseu.Biblioteca.controller;
     opens com.example.cadastromuseu.Biblioteca.controller to javafx.fxml;
+    opens com.example.cadastromuseu.Biblioteca.model to javafx.base;
 }

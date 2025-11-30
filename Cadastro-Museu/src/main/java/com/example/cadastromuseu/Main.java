@@ -11,11 +11,12 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
 
         FXMLLoader loader = new FXMLLoader(
-                Main.class.getResource("/com/example/cadastromuseu/Home.fxml")
+                Main.class.getResource("/com/example/cadastromuseu/Biblioteca/view/Login.fxml")
         );
 
         Scene scene = new Scene(loader.load(), 800, 600);
-        stage.setTitle("Sistema Museu - Biblioteca");
+
+        stage.setTitle("Login - Museu Treze de Maio");
         stage.setScene(scene);
         stage.show();
     }

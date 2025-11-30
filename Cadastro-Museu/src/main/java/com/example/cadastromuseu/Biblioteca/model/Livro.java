@@ -37,5 +37,10 @@ public class Livro {
 
     public int getIdCategoria() { return idCategoria; }
     public void setIdCategoria(int idCategoria) { this.idCategoria = idCategoria; }
+
+    @Override
+    public String toString() {
+        return titulo;
+    }
 }
 
