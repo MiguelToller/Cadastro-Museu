@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -25,6 +26,8 @@ public class ListagemLivrosController implements Initializable {
     @FXML private TableColumn<Livro, String> colTitulo;
     @FXML private TableColumn<Livro, Integer> colAno;
     @FXML private TableColumn<Livro, String> colISBN;
+    @FXML private TextField txtFiltro;
+
 
     private LivroDAO livroDAO = new LivroDAO();
     private ObservableList<Livro> listaLivros;
@@ -65,5 +68,38 @@ public class ListagemLivrosController implements Initializable {
         stage.close();
     }
 
-    // Futuro: Implementar a lógica de edição aqui, se o usuário logado for bibliotecário.
+    // ----------------------------------------------------------------------
+    // MÉTODOS DE FILTRO
+    // ----------------------------------------------------------------------
+
+    // Chamado quando uma tecla é solta no campo txtFiltro
+    @FXML
+    private void handleFiltrarLivros() {
+        String termo = txtFiltro.getText().trim();
+
+        if (termo.isEmpty()) {
+            // Se o campo estiver vazio, carrega todos os livros (método que já existe)
+            carregarLivros();
+        } else {
+            // Se houver termo, chama a busca filtrada
+            try {
+                List<Livro> livrosFiltrados = livroDAO.listarPorFiltro(termo);
+                // Atualiza a ObservableList da TableView
+                ObservableList<Livro> listaFiltrada = FXCollections.observableArrayList(livrosFiltrados);
+                tableViewLivros.setItems(listaFiltrada);
+
+            } catch (SQLException e) {
+                System.err.println("Erro ao filtrar livros: " + e.getMessage());
+                // Você pode adicionar um alerta aqui se necessário
+            }
+        }
+    }
+
+    // Chamado pelo botão "Limpar"
+    @FXML
+    private void handleLimparFiltro() {
+        txtFiltro.clear(); // Limpa o campo
+        carregarLivros();  // Recarrega todos os livros
+    }
+
 }

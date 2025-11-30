@@ -14,6 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -34,6 +35,10 @@ public class LivroController implements Initializable {
     private LivroDAO livroDao = new LivroDAO();
     private EditoraDAO editoraDao = new EditoraDAO();
     private CategoriaDAO categoriaDao = new CategoriaDAO();
+
+    // Atributos de Controle para Edição e Referência
+    private Livro livroParaEdicao;
+    private GestaoLivrosController gestaoLivrosController;
 
     // ----------------------------------------------------------------------
     // 1. INITIALIZE: Carrega os dados nas ComboBoxes quando a tela é carregada
@@ -84,24 +89,36 @@ public class LivroController implements Initializable {
             Editora editoraSelecionada = cbEditora.getSelectionModel().getSelectedItem();
             Categoria categoriaSelecionada = cbCategoria.getSelectionModel().getSelectedItem();
 
+            // Reutiliza o objeto se estiver editando, ou cria um novo
+            Livro livro = (livroParaEdicao != null) ? livroParaEdicao : new Livro();
+
             // 2. Cria o objeto Livro e preenche os campos simples
-            Livro livro = new Livro();
             livro.setTitulo(txtTitulo.getText().trim());
             livro.setAnoPublicacao(anoPublicacao);
             livro.setIsbn(txtIsbn.getText().trim());
-
-            // 3. Atribui os IDs REAIS dos objetos selecionados
             livro.setIdEditora(editoraSelecionada.getId());
             livro.setIdCategoria(categoriaSelecionada.getId());
 
-            // 4. Chamada ao DAO de Livro
-            livroDao.inserir(livro);
+            if (livroParaEdicao != null) {
+                // Modo EDIÇÃO
+                livroDao.atualizar(livro); // Chama o novo método do DAO
+                alerta("Sucesso!", "Livro '" + livro.getTitulo() + "' ATUALIZADO com sucesso!", Alert.AlertType.INFORMATION);
+            } else {
+                // Modo CADASTRO NOVO
+                livroDao.inserir(livro);
+                alerta("Sucesso!", "Livro '" + livro.getTitulo() + "' CADASTRADO com sucesso!", Alert.AlertType.INFORMATION);
+            }
 
-            alerta("Sucesso!", "Livro '" + livro.getTitulo() + "' cadastrado com sucesso!", Alert.AlertType.INFORMATION);
-            limparCampos();
+            // Ação final: Recarrega a tabela de gestão e fecha a janela
+            if (gestaoLivrosController != null) {
+                gestaoLivrosController.carregarLivros(); // Atualiza a tabela na tela de gestão
+            }
+
+            // Fechamento da janela
+            ((Stage) txtTitulo.getScene().getWindow()).close();
 
         } catch (SQLException e) {
-            alerta("Erro de Banco de Dados", "Falha ao inserir o livro. Verifique a conexão. Erro: " + e.getMessage(), Alert.AlertType.ERROR);
+            alerta("Erro de Banco de Dados", "Falha ao salvar o livro. Erro: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         } catch (Exception e) {
             alerta("Erro Geral", "Ocorreu um erro inesperado: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -127,5 +144,41 @@ public class LivroController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // Métodos de Configuração (Setters)
+    public void setLivro(Livro livro) {
+        this.livroParaEdicao = livro;
+        if (livro != null) {
+            // Se estiver em modo Edição, preenche os campos
+            txtTitulo.setText(livro.getTitulo());
+            txtAno.setText(String.valueOf(livro.getAnoPublicacao()));
+            txtIsbn.setText(livro.getIsbn());
+
+            // Seleciona a Editora e Categoria nas ComboBoxes
+            selecionarComboBoxes(livro.getIdEditora(), livro.getIdCategoria());
+        }
+    }
+
+    public void setGestaoLivrosController(GestaoLivrosController controller) {
+        this.gestaoLivrosController = controller;
+    }
+
+    // Método auxiliar para selecionar o item correto nas ComboBoxes
+    private void selecionarComboBoxes(int idEditora, int idCategoria) {
+        // Lógica para selecionar o item correto na cbEditora
+        for (Editora e : cbEditora.getItems()) {
+            if (e.getId() == idEditora) {
+                cbEditora.getSelectionModel().select(e);
+                break;
+            }
+        }
+        // Lógica para selecionar o item correto na cbCategoria
+        for (Categoria c : cbCategoria.getItems()) {
+            if (c.getId() == idCategoria) {
+                cbCategoria.getSelectionModel().select(c);
+                break;
+            }
+        }
     }
 }

@@ -24,10 +24,14 @@
 
             <Button fx:id="btnCadastrarLivro" text="Cadastrar Livro" onAction="#abrirCadastroLivro"/>
             <Button fx:id="btnCadastrarUsuario" text="Cadastrar Usuario" onAction="#abrirCadastroUsuario" />
+
+            <Button fx:id="btnListarLivros" text="Consultar Livros (Acervo)" onAction="#listarLivros"/>
+
             <Button fx:id="btnRegistrarEmprestimo" text="Registrar Empréstimo" onAction="#abrirRegistroEmprestimo" />
             <Button fx:id="btnGerenciarDevolucao" text="Gerenciar Devoluções" onAction="#abrirGestaoDevolucao" />
 
-            <Button fx:id="btnListarLivros" text="Listar Livros" onAction="#listarLivros"/>
+            <Button fx:id="btnGerenciarLivros" text="Gerenciar Livros" onAction="#handleAbrirGestaoLivros"/>
+            <Button fx:id="btnGerenciarUsuarios" text="Gerenciar Usuários" onAction="#handleAbrirGestaoUsuarios"/>
 
         </VBox>
     </center>

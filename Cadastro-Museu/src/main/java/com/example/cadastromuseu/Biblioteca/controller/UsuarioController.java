@@ -27,6 +27,8 @@ public class UsuarioController implements Initializable {
     @FXML private ComboBox<String> cbPerfilAcesso; // Mapeia para o campo 'tipo' no Model
 
     private UsuarioDAO dao = new UsuarioDAO();
+    private Usuario usuarioParaEdicao; // O objeto a ser editado (null se for novo)
+    private GestaoUsuariosController gestaoUsuariosController;
 
     // ----------------------------------------------------------------------
     // INITIALIZE: Carrega as opções do ENUM para o ComboBox
@@ -44,34 +46,69 @@ public class UsuarioController implements Initializable {
     @FXML
     public void salvar(ActionEvent event) {
 
-        // Validação de campos obrigatórios
+        // --- Validação de campos obrigatórios ---
+        // A validação de SENHA deve ser diferente para edição.
+        boolean isCadastroNovo = (usuarioParaEdicao == null);
+
         if (txtNome.getText().trim().isEmpty() ||
                 txtEmail.getText().trim().isEmpty() ||
-                txtSenha.getText().trim().isEmpty() ||
-                cbPerfilAcesso.getSelectionModel().isEmpty()) {
+                cbPerfilAcesso.getSelectionModel().isEmpty() ||
+                (isCadastroNovo && txtSenha.getText().trim().isEmpty())) { // Senha só é obrigatória no cadastro
 
-            alerta("Erro", "Preencha todos os campos e selecione o Perfil de Acesso.", Alert.AlertType.WARNING);
+            alerta("Erro", "Preencha todos os campos. Senha é obrigatória no cadastro de novos usuários.", Alert.AlertType.WARNING);
             return;
         }
 
+        // --- Persistência de Dados (CREATE ou UPDATE) ---
         try {
-            Usuario usuario = new Usuario();
+            // 1. Cria ou reutiliza o objeto Usuario
+            Usuario usuario = isCadastroNovo ? new Usuario() : usuarioParaEdicao;
+
+            // 2. Preenche os campos
             usuario.setNome(txtNome.getText().trim());
             usuario.setEmail(txtEmail.getText().trim());
-            usuario.setSenha(txtSenha.getText());
-            // Usa o setter do campo 'tipo' (que mapeia para a coluna 'tipo' no banco)
             usuario.setTipo(cbPerfilAcesso.getSelectionModel().getSelectedItem());
 
-            dao.inserir(usuario);
+            // 3. Lógica da Senha
+            if (!txtSenha.getText().trim().isEmpty()) {
+                // Se o campo Senha for preenchido, atualiza a senha.
+                usuario.setSenha(txtSenha.getText());
+            } else if (isCadastroNovo) {
+                // A validação acima já deveria ter parado aqui, mas garante.
+                alerta("Erro", "Senha é obrigatória para novo cadastro.", Alert.AlertType.ERROR);
+                return;
+            } else {
+                // Se estiver em modo edição e a senha estiver vazia,
+                // setamos como null para que o DAO ignore a atualização da senha.
+                usuario.setSenha(null);
+            }
 
-            alerta("Sucesso", "Usuário cadastrado: " + usuario.getNome() + " (Tipo: " + usuario.getTipo() + ")", Alert.AlertType.INFORMATION);
-            limparCampos();
+            // 4. Chamada ao DAO
+            if (isCadastroNovo) {
+                dao.inserir(usuario);
+                alerta("Sucesso", "Usuário cadastrado: " + usuario.getNome() + " (Tipo: " + usuario.getTipo() + ")", Alert.AlertType.INFORMATION);
+                limparCampos(); // Limpa se for novo cadastro
+            } else {
+                dao.atualizar(usuario); // Chama o novo método
+                alerta("Sucesso", "Usuário atualizado: " + usuario.getNome() + " (ID: " + usuario.getId() + ")", Alert.AlertType.INFORMATION);
+            }
+
+            // 5. Atualiza e fecha a janela (se não for novo cadastro que limpa campos)
+            if (gestaoUsuariosController != null) {
+                gestaoUsuariosController.carregarUsuarios();
+            }
+            if (!isCadastroNovo) {
+                ((Stage) txtNome.getScene().getWindow()).close(); // Fecha após edição
+            }
 
         } catch (SQLException e) {
-            alerta("Erro de BD", "Falha ao inserir. Verifique a unicidade do Email ou a conexão. Erro: " + e.getMessage(), Alert.AlertType.ERROR);
+            alerta("Erro de BD", "Falha ao salvar. Verifique a unicidade do Email ou a conexão. Erro: " + e.getMessage(), Alert.AlertType.ERROR);
             e.printStackTrace();
         }
+
+        // O catch(Exception) genérico anterior foi removido, focando apenas no SQLException
     }
+
 
     // ----------------------------------------------------------------------
     // NAVEGAÇÃO E UTILS
@@ -98,5 +135,28 @@ public class UsuarioController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // Métodos de Configuração (Setters)
+    public void setUsuario(Usuario usuario) {
+        this.usuarioParaEdicao = usuario;
+
+        if (usuario != null) {
+            // Preenche os campos para Edição
+            txtNome.setText(usuario.getNome());
+            txtEmail.setText(usuario.getEmail());
+            // ATENÇÃO: Nunca pré-preencha a senha por segurança!
+            txtSenha.setText(""); // Deixe vazio; o usuário digita APENAS se quiser alterar.
+
+            // Seleciona o perfil de acesso correto
+            cbPerfilAcesso.getSelectionModel().select(usuario.getTipo());
+
+            // Desabilita a edição do email (opcional, mas recomendado)
+            // txtEmail.setDisable(true);
+        }
+    }
+
+    public void setGestaoUsuariosController(GestaoUsuariosController controller) {
+        this.gestaoUsuariosController = controller;
     }
 }

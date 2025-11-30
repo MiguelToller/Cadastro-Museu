@@ -24,8 +24,11 @@ public class HomeController implements Initializable {
     @FXML private Button btnCadastrarUsuario;
     @FXML private Button btnRegistrarEmprestimo;
     @FXML private Button btnListarLivros;
+    @FXML private Button btnGerenciarDevolucao;
     @FXML private Button btnSair;
     @FXML private Label lblUsuarioLogado;
+    @FXML private Button btnGerenciarLivros;
+    @FXML private Button btnGerenciarUsuarios;
 
     private Usuario usuarioLogado;
 
@@ -33,7 +36,7 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Garante que, se for carregado direto (sem login), os botões estejam escondidos
         // Se for carregado via LoginController, o setUsuarioLogado irá sobrescrever.
-        esconderBotoesGerenciamento(true);
+        esconderBotoesAdministrativos(true);
     }
 
     // Dentro de HomeController.java
@@ -72,24 +75,41 @@ public class HomeController implements Initializable {
         configurarPermissoes();
     }
 
+
     private void configurarPermissoes() {
         if (usuarioLogado == null) {
-            // Caso a tela Home seja carregada sem login, esconde tudo
-            esconderBotoesGerenciamento(false);
+            // Se a tela Home for carregada sem login, esconde tudo
+            configurarBotoesAdministrativos(false);
+            btnListarLivros.setVisible(false); // Esconde se não houver usuário logado
+            btnListarLivros.setManaged(false);
             return;
         }
 
         String tipo = usuarioLogado.getTipo();
 
-        // Variável de controle booleana
-        boolean acessoGerenciamento = tipo.equals("bibliotecario");
+        // 1. Acesso Administrativo (Botões de CRUD/Gestão)
+        boolean isBibliotecario = tipo.equals("bibliotecario");
 
-        // Chamada ao método que esconde/mostra
-        esconderBotoesGerenciamento(!acessoGerenciamento);
+        // Apenas o bibliotecário vê os botões de CRUD/Gestão
+        configurarBotoesAdministrativos(isBibliotecario);
+
+        // 2. Acesso à Consulta Pública (btnListarLivros)
+        // Regra: Visível para COMUNIDADE e PESQUISADOR, mas NÃO para BIBLIOTECARIO.
+        boolean isConsultaPublica = tipo.equals("comunidade") || tipo.equals("pesquisador");
+
+        btnListarLivros.setVisible(isConsultaPublica);
+        btnListarLivros.setManaged(isConsultaPublica);
+
+        // 3. Acesso ao Módulo de Empréstimo
+        // Acesso liberado para bibliotecário. Comunidade e Pesquisador não pode registrar.
+        boolean acessoEmprestimo = isBibliotecario;
+
+        btnRegistrarEmprestimo.setVisible(acessoEmprestimo);
+        btnRegistrarEmprestimo.setManaged(acessoEmprestimo);
     }
 
     // Método auxiliar para manipular a visibilidade
-    private void esconderBotoesGerenciamento(boolean esconder) {
+    private void esconderBotoesAdministrativos(boolean esconder) {
         // Usa setVisible(false) e setManaged(false) para remover o botão e o espaço que ele ocupa
 
         // Cadastrar Livro
@@ -103,8 +123,33 @@ public class HomeController implements Initializable {
         // Registrar Empréstimo
         btnRegistrarEmprestimo.setVisible(!esconder);
         btnRegistrarEmprestimo.setManaged(!esconder);
+    }
 
-        // O botão Listar Livros (Consulta) continua visível para todos por padrão.
+
+    // Método auxiliar para manipular a visibilidade dos botões ADMINISTRATIVOS
+    private void configurarBotoesAdministrativos(boolean visivel) {
+        // Esses botões DEVEM SER VISÍVEIS apenas para o Bibliotecário
+
+        // Cadastro/Gestão de Livro
+        btnCadastrarLivro.setVisible(visivel);
+        btnCadastrarLivro.setManaged(visivel);
+
+        // Cadastro/Gestão de Usuário
+        btnCadastrarUsuario.setVisible(visivel);
+        btnCadastrarUsuario.setManaged(visivel);
+
+        // Gerenciar Devoluções (Acesso administrativo)
+        btnGerenciarDevolucao.setVisible(visivel);
+        btnGerenciarDevolucao.setManaged(visivel);
+
+        btnGerenciarLivros.setVisible(visivel);
+        btnGerenciarLivros.setManaged(visivel);
+
+        btnGerenciarUsuarios.setVisible(visivel);
+        btnGerenciarUsuarios.setManaged(visivel);
+
+        // ⚠️ Se você tem botões Gerenciar Livros/Usuários sem fx:id no FXML, eles não serão controlados.
+        // Garanta que todos os botões de gestão tenham fx:id e sejam controlados aqui.
     }
 
     @FXML
@@ -215,8 +260,6 @@ public class HomeController implements Initializable {
         }
     }
 
-    // Dentro de HomeController.java
-
     @FXML
     private void abrirGestaoDevolucao(ActionEvent event) {
         try {
@@ -232,6 +275,56 @@ public class HomeController implements Initializable {
         } catch (IOException e) {
             System.err.println("Erro ao carregar a tela de Devolução: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleAbrirGestaoLivros(ActionEvent event) {
+        // 1. Verifique se o usuário atual é um Bibliotecário, se aplicável!
+        // if (!usuarioLogado.getTipo().equals("bibliotecario")) { return; }
+
+        try {
+            // Carrega o FXML de Gestão de Livros
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cadastromuseu/Biblioteca/view/GestaoLivros.fxml"));
+            Parent root = loader.load();
+
+            // Cria uma nova janela (Stage)
+            Stage stage = new Stage();
+            stage.setTitle("Gestão Administrativa de Livros");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL); // Bloqueia a Home
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Erro ao abrir a tela de Gestão de Livros.");
+            e.printStackTrace();
+            // Opcional: Mostrar um alerta de erro
+            // alerta("Erro", "Falha ao carregar a tela de gestão.", Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void handleAbrirGestaoUsuarios(ActionEvent event) {
+        // ⚠️ Se você tiver controle de acesso, adicione a verificação aqui:
+        // Ex: if (!usuarioLogado.getTipo().equals("bibliotecario")) { return; }
+
+        try {
+            // Carrega o FXML da Gestão de Usuários
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cadastromuseu/Biblioteca/view/GestaoUsuarios.fxml"));
+            Parent root = loader.load();
+
+            // Cria uma nova janela (Stage)
+            Stage stage = new Stage();
+            stage.setTitle("Gestão de Usuários");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Erro ao abrir a tela de Gestão de Usuários.");
+            e.printStackTrace();
+            // Opcional: Mostrar um alerta de erro ao usuário
+            // alerta("Erro", "Falha ao carregar a tela de gestão de usuários.", Alert.AlertType.ERROR);
         }
     }
 

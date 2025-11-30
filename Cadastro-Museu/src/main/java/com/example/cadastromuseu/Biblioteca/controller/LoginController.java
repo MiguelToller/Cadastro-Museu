@@ -67,6 +67,7 @@ public class LoginController {
         // Cria um objeto Usuario temporário para simular o acesso público
         Usuario usuarioComunidade = new Usuario();
         usuarioComunidade.setTipo("comunidade");
+        usuarioComunidade.setNome("comunidade");
 
         // Navega diretamente, restringindo o acesso na próxima tela (Home)
         navegarParaHome(usuarioComunidade, event);
@@ -81,7 +82,7 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cadastromuseu/Biblioteca/view/Home.fxml"));
             Parent root = loader.load();
 
-            // Opcional: Passar o objeto Usuario para o HomeController para gerenciar permissões
+            // Passa o objeto Usuario para o HomeController para gerenciar permissões
             HomeController homeController = loader.getController();
             homeController.setUsuarioLogado(usuario);
 

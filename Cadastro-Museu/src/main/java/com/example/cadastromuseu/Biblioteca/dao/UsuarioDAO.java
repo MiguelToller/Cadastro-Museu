@@ -85,6 +85,43 @@ public class UsuarioDAO {
         return lista;
     }
 
+    // ----------------------------------------------------------------------
+    // FILTRO
+    // ----------------------------------------------------------------------
+    public List<Usuario> listarPorFiltro(String termo) throws SQLException {
+        List<Usuario> lista = new ArrayList<>();
+
+        // 1. Converte o termo para usar no LIKE (case-insensitive)
+        String termoPesquisa = "%" + termo.toLowerCase() + "%";
+
+        // 2. Query: Busca por NOME, EMAIL ou TIPO, ignorando maiúsculas/minúsculas
+        String sql = "SELECT id, nome, email, senha, tipo FROM usuario " +
+                "WHERE LOWER(nome) LIKE ? OR LOWER(email) LIKE ? OR LOWER(tipo) LIKE ?";
+
+        try (Connection conn = Conexao.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // 3. Define os parâmetros
+            ps.setString(1, termoPesquisa); // Para a coluna NOME
+            ps.setString(2, termoPesquisa); // Para a coluna EMAIL
+            ps.setString(3, termoPesquisa); // Para a coluna TIPO
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Usuario usuario = new Usuario();
+                    usuario.setId(rs.getInt("id"));
+                    usuario.setNome(rs.getString("nome"));
+                    usuario.setEmail(rs.getString("email"));
+                    usuario.setSenha(rs.getString("senha"));
+                    usuario.setTipo(rs.getString("tipo"));
+
+                    lista.add(usuario);
+                }
+            }
+        }
+        return lista;
+    }
+
     /**
      * Busca um usuário pelo email e valida a senha.
      * @return O objeto Usuario completo se as credenciais forem válidas, ou null.
@@ -119,6 +156,65 @@ public class UsuarioDAO {
                 // Usuário não encontrado ou senha incorreta
                 return null;
             }
+        }
+    }
+
+    // Dentro de UsuarioDAO.java
+
+    // ======================================================================
+    // U - UPDATE (Atualizar Usuário Existente)
+    // ======================================================================
+    public void atualizar(Usuario usuario) throws SQLException {
+        // Note: Usamos o ID no WHERE para saber qual registro atualizar.
+        // O campo 'senha' é opcional. Se a senha for vazia no formulário, não a atualizamos.
+
+        // Assumindo que o Controller enviará a senha apenas se ela for alterada.
+        // Se a senha for nula/vazia no objeto, atualizamos SÓ os outros campos.
+        String sql;
+
+        if (usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
+            // Atualiza todos os campos, incluindo a senha
+            sql = "UPDATE usuario SET nome = ?, email = ?, senha = ?, tipo = ? WHERE id = ?";
+            try (Connection conn = Conexao.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, usuario.getNome());
+                stmt.setString(2, usuario.getEmail());
+                stmt.setString(3, usuario.getSenha()); // Senha nova
+                stmt.setString(4, usuario.getTipo());
+                stmt.setInt(5, usuario.getId());
+                stmt.executeUpdate();
+            }
+        } else {
+            // Atualiza apenas nome, email e tipo (Mantém a senha antiga)
+            sql = "UPDATE usuario SET nome = ?, email = ?, tipo = ? WHERE id = ?";
+            try (Connection conn = Conexao.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, usuario.getNome());
+                stmt.setString(2, usuario.getEmail());
+                stmt.setString(3, usuario.getTipo());
+                stmt.setInt(4, usuario.getId());
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    // ======================================================================
+    // D - DELETE (Excluir Usuário)
+    // ======================================================================
+    public void excluir(int id) throws SQLException {
+        String sql = "DELETE FROM usuario WHERE id = ?";
+
+        try (Connection conn = Conexao.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            // Captura erros de FK (se o usuário tiver empréstimos ativos)
+            throw new SQLException("Erro ao excluir usuário. Verifique se ele possui empréstimos pendentes. Detalhes: " + e.getMessage());
         }
     }
 
