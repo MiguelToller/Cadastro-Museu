@@ -19,5 +19,26 @@ public class Pessoa {
     public void setNome(String nome) { this.nome = nome; }
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
+
+    @Override
+    public String toString() {
+        // Se o tipo existir, formata como "Nome (Tipo)"; caso contrário, apenas "Nome"
+        return nome + (tipo != null && !tipo.isEmpty() ? " (" + tipo + ")" : "");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pessoa pessoa = (Pessoa) o;
+        // Duas Pessoas são iguais se os IDs forem iguais
+        return id == pessoa.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id; // Usa o ID como código hash
+    }
 }
 

@@ -6,6 +6,7 @@ import com.example.cadastromuseu.Biblioteca.model.Usuario;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -79,18 +80,21 @@ public class LoginController {
     private void navegarParaHome(Usuario usuario, ActionEvent event) {
         try {
             // Carrega o FXML da tela principal (Home)
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cadastromuseu/Biblioteca/view/Home.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cadastromuseu/Comum/view/SelecaoModulo.fxml"));
             Parent root = loader.load();
 
-            // Passa o objeto Usuario para o HomeController para gerenciar permissões
-            HomeController homeController = loader.getController();
-            homeController.setUsuarioLogado(usuario);
+            // NOVO CONTROLLER
+            com.example.cadastromuseu.Util.controller.SelecaoModuloController controller = loader.getController();
+            controller.setUsuarioLogado(usuario);
 
-            // Troca a cena na janela atual
-            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root, 800, 600));
-            stage.setTitle("Sistema de Gestão - Museu Treze de Maio");
+            // Abre a tela de Seleção
+            Stage stage = new Stage();
+            stage.setTitle("Menu Principal");
+            stage.setScene(new Scene(root, 600, 500)); // Tamanho menor para seleção
             stage.show();
+
+            // Fecha a tela de Login
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 
         } catch (IOException e) {
             lblMensagem.setText("Erro ao carregar a tela principal.");

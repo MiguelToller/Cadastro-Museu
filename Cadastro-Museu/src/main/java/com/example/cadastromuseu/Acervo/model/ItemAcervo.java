@@ -37,4 +37,9 @@ public class ItemAcervo {
     public void setPessoas(List<Pessoa> pessoas) { this.pessoas = pessoas; }
     public List<Tag> getTags() { return tags; }
     public void setTags(List<Tag> tags) { this.tags = tags; }
+
+    @Override
+    public String toString() {
+        return titulo;
+    }
 }

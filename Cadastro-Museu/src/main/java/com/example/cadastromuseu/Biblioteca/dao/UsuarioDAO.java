@@ -1,6 +1,8 @@
 package com.example.cadastromuseu.Biblioteca.dao;
 
 import com.example.cadastromuseu.Biblioteca.model.Usuario;
+import com.example.cadastromuseu.Util.conection.Conexao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -1,6 +1,7 @@
 package com.example.cadastromuseu.Biblioteca.dao;
 
 import com.example.cadastromuseu.Biblioteca.model.Autor;
+import com.example.cadastromuseu.Util.conection.Conexao;
 
 import java.sql.*;
 import java.util.ArrayList;

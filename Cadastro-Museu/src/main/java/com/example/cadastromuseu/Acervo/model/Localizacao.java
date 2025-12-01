@@ -23,4 +23,28 @@ public class Localizacao {
     public void setEstante(String estante) { this.estante = estante; }
     public String getPrateleira() { return prateleira; }
     public void setPrateleira(String prateleira) { this.prateleira = prateleira; }
+
+    @Override
+    public String toString() {
+        // Se a localização for a opção 'Não Definida' (ID 0), retorna a string definida no Controller
+        if (this.id == 0) {
+            return "Não Definida";
+        }
+
+        // Constrói uma descrição completa
+        StringBuilder sb = new StringBuilder();
+
+        // Adiciona a Sala (sempre obrigatória)
+        sb.append("Sala: ").append(sala);
+
+        // Adiciona Estante e Prateleira se não forem nulas ou vazias
+        if (estante != null && !estante.trim().isEmpty()) {
+            sb.append(" | Estante: ").append(estante);
+        }
+        if (prateleira != null && !prateleira.trim().isEmpty()) {
+            sb.append(" | Prateleira: ").append(prateleira);
+        }
+
+        return sb.toString();
+    }
 }

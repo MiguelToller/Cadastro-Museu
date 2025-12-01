@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.cadastromuseu.Biblioteca.controller.HomeController">
+            fx:controller="com.example.cadastromuseu.Biblioteca.controller.HomeBibliotecaController">
 
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
