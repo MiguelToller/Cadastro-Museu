@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="700.0" prefWidth="800.0" spacing="15.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cadastromuseu.Acervo.controller.EdicaoItemAcervoController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <Label fx:id="lblTituloTela" text="Editar Item do Acervo">
+        <font>
+            <Font name="System Bold" size="20.0" />
+        </font>
+    </Label>
+
+    <GridPane hgap="10.0" vgap="10.0">
+        <columnConstraints>
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="120.0" />
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="300.0" />
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="120.0" />
+            <javafx.scene.layout.ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="300.0" />
+        </columnConstraints>
+
+        <Label text="Título (*):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="txtTitulo" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="0" />
+
+        <Label text="Tipo de Item (*):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <ComboBox fx:id="cbTipoItem" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Localização:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <ComboBox fx:id="cbLocalizacao" prefWidth="250.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+        <Label text="Data do Item:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <DatePicker fx:id="dpDataItem" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label text="Caminho Arquivo:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+
+        <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+            <TextField fx:id="txtCaminhoArquivo" HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleEscolherArquivo" text="..." />
+        </HBox>
+
+        <Label text="Descrição:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+
+        <Label text="Descrição:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <TextArea fx:id="txtDescricao" prefHeight="80.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3" />
+    </GridPane>
+
+    <VBox VBox.vgrow="ALWAYS" spacing="10.0">
+        <Label text="Relacionamentos (Pessoas e Tags)" style="-fx-font-weight: bold;" />
+
+        <HBox spacing="15.0" VBox.vgrow="ALWAYS">
+
+            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label text="Pessoas (Autores, Doadores, etc.)" />
+                <ListView fx:id="lvPessoasRelacionadas" prefHeight="150.0" VBox.vgrow="ALWAYS" />
+                <HBox spacing="5.0">
+                    <Button onAction="#handleAdicionarPessoa" text="Adicionar..." />
+                    <Button onAction="#handleRemoverPessoa" text="Remover" />
+                </HBox>
+            </VBox>
+
+            <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                <Label text="Tags / Palavras-chave" />
+                <ListView fx:id="lvTags" prefHeight="150.0" VBox.vgrow="ALWAYS" />
+                <HBox spacing="5.0">
+                    <Button onAction="#handleAdicionarTag" text="Adicionar..." />
+                    <Button onAction="#handleRemoverTag" text="Remover" />
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
+        <Button onAction="#handleCancelar" text="Cancelar" />
+        <Button onAction="#handleAtualizar" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;" text="Atualizar Item" />
+    </HBox>
+
+</VBox>

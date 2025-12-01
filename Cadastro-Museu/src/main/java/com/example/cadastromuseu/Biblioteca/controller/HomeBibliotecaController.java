@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.example.cadastromuseu.Biblioteca.model.Usuario;
+import com.example.cadastromuseu.Util.controller.SelecaoModuloController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -325,6 +326,42 @@ public class HomeBibliotecaController implements Initializable {
             e.printStackTrace();
             // Opcional: Mostrar um alerta de erro ao usuário
             // alerta("Erro", "Falha ao carregar a tela de gestão de usuários.", Alert.AlertType.ERROR);
+        }
+    }
+
+    /**
+     * Carrega a tela SelecaoModulo e fecha a tela atual,
+     * injetando o Usuario Logado de volta no controller de destino.
+     */
+    @FXML
+    private void handleVoltarMenu(ActionEvent event) {
+        try {
+            // Caminho que você corrigiu
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cadastromuseu/Comum/view/SelecaoModulo.fxml"));
+            Parent root = loader.load();
+
+            // ⚠️ OBTÉM E INJETA O USUÁRIO DE VOLTA NO NOVO CONTROLLER ⚠️
+            // 1. Obtém o controller da nova tela
+            SelecaoModuloController selecaoController = loader.getController();
+
+            // 2. Passa o usuário logado para ele
+            if (selecaoController != null) {
+                selecaoController.setUsuarioLogado(this.usuarioLogado);
+            }
+            // -------------------------------------------------------------
+
+            Stage stage = new Stage();
+            stage.setTitle("Seleção de Módulos");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            // Fecha a janela atual usando o ActionEvent
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            currentStage.close();
+
+        } catch (IOException e) {
+            alerta("Não foi possível carregar a tela de Seleção de Módulos.", Alert.AlertType.ERROR);
+            e.printStackTrace();
         }
     }
 

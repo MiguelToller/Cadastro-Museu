@@ -3,7 +3,8 @@ module com.example.cadastromuseu {
     requires javafx.fxml;
     requires java.sql; // Para o MySQL
     requires com.google.protobuf; // Se você estiver usando o MySQL Connector/J 8+
-    requires org.apache.commons.dbcp2; // Para o pool de conexões (DBCP)
+    requires org.apache.commons.dbcp2;
+    requires java.desktop; // Para o pool de conexões (DBCP)
 
     // 🚨 PACOTES DE VIEW/CONTROLLER PRECISAM ESTAR ABERTOS PARA O FXML 🚨
 
