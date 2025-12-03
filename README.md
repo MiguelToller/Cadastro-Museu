@@ -28,16 +28,13 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 
 ### 2. Configuração do Banco de Dados
 
-1.  Crie um banco de dados chamado: `cadastro_museu` (ou o nome que você definiu).
-2.  Execute o script SQL para criar as tabelas necessárias (`item_acervo`, `tipo_item`, `localizacao`, `usuario`, etc.).
-
-    > **[⚠️ Importante]** Você deve ter um script SQL com a estrutura das tabelas. Se não tiver, crie-o manualmente com base nos seus modelos (DAO).
-
-3.  Atualize os dados de conexão no arquivo de configuração (`Conexao.java` ou similar, localizado em `com.example.cadastromuseu.Util.conection`):
+1.  Crie um banco de dados chamado: `museu_biblioteca`.
+2.  Execute o script SQL para criar as tabelas necessárias.
+3.  Atualize os dados de conexão no arquivo de configuração (`Conexao.java`, localizado em `com.example.cadastromuseu.Util.conection`):
 
     ```java
     // Exemplo de configuração no Conexao.java
-    private static final String URL = "jdbc:mysql://localhost:3306/cadastro_museu";
+    private static final String URL = "jdbc:mysql://localhost:3306/museu_biblioteca";
     private static final String USER = "seu_usuario"; // Mude aqui
     private static final String PASSWORD = "sua_senha"; // Mude aqui
     ```
@@ -46,7 +43,7 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 
 1.  **Clonar o Repositório:**
     ```bash
-    git clone 'link do projeto'
+    git clone https://github.com/MiguelToller/Cadastro-Museu.git
     ```
 
 2.  **Compilar e Empacotar (via Maven):**
